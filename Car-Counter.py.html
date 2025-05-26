@@ -1,0 +1,145 @@
+
+<!-- saved from url=(0093)file:///C:/Users/aman_/PycharmProjects/Object-Detection-Yolo/exportToHTML/Car-Counter.py.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Car-Counter.py</title>
+
+<style type="text/css">
+.s0 { color: #5f826b; font-style: italic;}
+.s1 { color: #bcbec4;}
+.s2 { color: #cf8e6d;}
+.s3 { color: #7a7e85;}
+.s4 { color: #bcbec4;}
+.s5 { color: #6aab73;}
+.s6 { color: #2aacb8;}
+</style>
+</head>
+<body bgcolor="#1e1f22">
+<table cellspacing="0" cellpadding="5" cols="1" width="100%" bgcolor="#606060">
+<tbody><tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Car-Counter.py</font>
+</center></td></tr></tbody></table>
+<pre><span class="s0">""" 
+The Car Counter Project is a computer vision-based system 
+designed to automatically detect and count vehicles as they 
+pass through a defined area in a video feed. Using object 
+detection and tracking, the system monitors moving cars and 
+counts each one that crosses a virtual line. This project is useful 
+for traffic analysis, smart city infrastructure, and vehicle flow monitoring. 
+"""</span>
+<span class="s2">from </span><span class="s1">pydoc </span><span class="s2">import </span><span class="s1">classname</span>
+<span class="s2">from </span><span class="s1">cv2 </span><span class="s2">import </span><span class="s1">VideoCapture</span>
+<span class="s2">from </span><span class="s1">ultralytics </span><span class="s2">import </span><span class="s1">YOLO</span>
+<span class="s2">import </span><span class="s1">cv2 </span><span class="s3">#used for image and video processing in Python.</span>
+<span class="s2">import </span><span class="s1">cvzone </span><span class="s3">#Python library built on top of OpenCV to simplify computer vision tasks.</span>
+<span class="s2">import </span><span class="s1">math</span>
+<span class="s2">from </span><span class="s1">sort </span><span class="s2">import </span><span class="s4">*</span>
+
+
+<span class="s1">cap </span><span class="s4">= </span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">VideoCapture</span><span class="s4">(</span><span class="s5">"../videos/car.mp4"</span><span class="s4">)</span>
+
+<span class="s1">model </span><span class="s4">= </span><span class="s1">YOLO</span><span class="s4">(</span><span class="s5">"../Yolo-Weights/yolov8m.pt"</span><span class="s4">)</span>
+
+<span class="s1">classNames </span><span class="s4">= [</span>
+    <span class="s5">'person'</span><span class="s4">, </span><span class="s5">'bicycle'</span><span class="s4">, </span><span class="s5">'car'</span><span class="s4">, </span><span class="s5">'motorcycle'</span><span class="s4">, </span><span class="s5">'airplane'</span><span class="s4">, </span><span class="s5">'bus'</span><span class="s4">, </span><span class="s5">'train'</span><span class="s4">, </span><span class="s5">'truck'</span><span class="s4">,</span>
+    <span class="s5">'boat'</span><span class="s4">, </span><span class="s5">'traffic light'</span><span class="s4">, </span><span class="s5">'fire hydrant'</span><span class="s4">, </span><span class="s5">'stop sign'</span><span class="s4">, </span><span class="s5">'parking meter'</span><span class="s4">, </span><span class="s5">'bench'</span><span class="s4">,</span>
+    <span class="s5">'bird'</span><span class="s4">, </span><span class="s5">'cat'</span><span class="s4">, </span><span class="s5">'dog'</span><span class="s4">, </span><span class="s5">'horse'</span><span class="s4">, </span><span class="s5">'sheep'</span><span class="s4">, </span><span class="s5">'cow'</span><span class="s4">, </span><span class="s5">'elephant'</span><span class="s4">, </span><span class="s5">'bear'</span><span class="s4">, </span><span class="s5">'zebra'</span><span class="s4">,</span>
+    <span class="s5">'giraffe'</span><span class="s4">, </span><span class="s5">'backpack'</span><span class="s4">, </span><span class="s5">'umbrella'</span><span class="s4">, </span><span class="s5">'handbag'</span><span class="s4">, </span><span class="s5">'tie'</span><span class="s4">, </span><span class="s5">'suitcase'</span><span class="s4">, </span><span class="s5">'frisbee'</span><span class="s4">,</span>
+    <span class="s5">'skis'</span><span class="s4">, </span><span class="s5">'snowboard'</span><span class="s4">, </span><span class="s5">'sports ball'</span><span class="s4">, </span><span class="s5">'kite'</span><span class="s4">, </span><span class="s5">'baseball bat'</span><span class="s4">, </span><span class="s5">'baseball glove'</span><span class="s4">,</span>
+    <span class="s5">'skateboard'</span><span class="s4">, </span><span class="s5">'surfboard'</span><span class="s4">, </span><span class="s5">'tennis racket'</span><span class="s4">, </span><span class="s5">'bottle'</span><span class="s4">, </span><span class="s5">'wine glass'</span><span class="s4">, </span><span class="s5">'cup'</span><span class="s4">,</span>
+    <span class="s5">'fork'</span><span class="s4">, </span><span class="s5">'knife'</span><span class="s4">, </span><span class="s5">'spoon'</span><span class="s4">, </span><span class="s5">'bowl'</span><span class="s4">, </span><span class="s5">'banana'</span><span class="s4">, </span><span class="s5">'apple'</span><span class="s4">, </span><span class="s5">'sandwich'</span><span class="s4">, </span><span class="s5">'orange'</span><span class="s4">,</span>
+    <span class="s5">'broccoli'</span><span class="s4">, </span><span class="s5">'carrot'</span><span class="s4">, </span><span class="s5">'hot dog'</span><span class="s4">, </span><span class="s5">'pizza'</span><span class="s4">, </span><span class="s5">'donut'</span><span class="s4">, </span><span class="s5">'cake'</span><span class="s4">, </span><span class="s5">'chair'</span><span class="s4">, </span><span class="s5">'couch'</span><span class="s4">,</span>
+    <span class="s5">'potted plant'</span><span class="s4">, </span><span class="s5">'bed'</span><span class="s4">, </span><span class="s5">'dining table'</span><span class="s4">, </span><span class="s5">'toilet'</span><span class="s4">, </span><span class="s5">'tv'</span><span class="s4">, </span><span class="s5">'laptop'</span><span class="s4">, </span><span class="s5">'mouse'</span><span class="s4">,</span>
+    <span class="s5">'remote'</span><span class="s4">, </span><span class="s5">'keyboard'</span><span class="s4">, </span><span class="s5">'cell phone'</span><span class="s4">, </span><span class="s5">'microwave'</span><span class="s4">, </span><span class="s5">'oven'</span><span class="s4">, </span><span class="s5">'toaster'</span><span class="s4">, </span><span class="s5">'sink'</span><span class="s4">,</span>
+    <span class="s5">'refrigerator'</span><span class="s4">, </span><span class="s5">'book'</span><span class="s4">, </span><span class="s5">'clock'</span><span class="s4">, </span><span class="s5">'vase'</span><span class="s4">, </span><span class="s5">'scissors'</span><span class="s4">, </span><span class="s5">'teddy bear'</span><span class="s4">, </span><span class="s5">'hair drier'</span><span class="s4">,</span>
+    <span class="s5">'toothbrush'</span>
+<span class="s4">]</span>
+
+<span class="s1">mask </span><span class="s4">= </span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">imread</span><span class="s4">(</span><span class="s5">"mask.png"</span><span class="s4">)</span>
+
+<span class="s3">#TRACKING</span>
+<span class="s1">tracker </span><span class="s4">= </span><span class="s1">Sort</span><span class="s4">(</span><span class="s1">max_age</span><span class="s4">=</span><span class="s6">20</span><span class="s4">, </span><span class="s1">min_hits</span><span class="s4">=</span><span class="s6">3</span><span class="s4">, </span><span class="s1">iou_threshold</span><span class="s4">=</span><span class="s6">0.3</span><span class="s4">)</span>
+
+<span class="s1">limits </span><span class="s4">= [</span><span class="s6">400</span><span class="s4">,</span><span class="s6">297</span><span class="s4">,</span><span class="s6">673</span><span class="s4">,</span><span class="s6">297</span><span class="s4">]</span>
+
+<span class="s1">totalCount </span><span class="s4">= []</span>
+
+<span class="s5">""" 
+The SORT tracker is being configured to: 
+Confirm tracks only after consistent detection (min_hits=3) 
+Keep missing tracks alive up to 20 frames (max_age=20) 
+Use a 0.3 IoU threshold to match detections with existing tracks. 
+This setup balances between robustness (less false positives) and tolerance to temporary detection losses. 
+ 
+Every machine learning model, object detection models require a set of metrics to assess their accuracy.  
+AP (Average Precision) and IoU (Intersection over Union) are commonly used metrics. 
+ 
+IoU is the ratio of the intersection of the two boxes' areas to their combined areas.  
+The ground truth bounding box and the anticipated bounding box both encompass the area of union, which is the denominator. 
+"""</span>
+<span class="s2">while True</span><span class="s4">:</span>
+    <span class="s1">Success</span><span class="s4">, </span><span class="s1">img </span><span class="s4">= </span><span class="s1">cap</span><span class="s4">.</span><span class="s1">read</span><span class="s4">()  </span><span class="s3"># Read a frame</span>
+    <span class="s1">imgRegion </span><span class="s4">= </span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">bitwise_and</span><span class="s4">(</span><span class="s1">img</span><span class="s4">,</span><span class="s1">mask</span><span class="s4">)</span>
+    <span class="s1">img </span><span class="s4">= </span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">resize</span><span class="s4">(</span><span class="s1">img</span><span class="s4">, (</span><span class="s6">1280</span><span class="s4">, </span><span class="s6">720</span><span class="s4">))</span>
+
+    <span class="s1">results </span><span class="s4">= </span><span class="s1">model</span><span class="s4">(</span><span class="s1">imgRegion </span><span class="s4">,</span><span class="s1">stream </span><span class="s4">= </span><span class="s2">True</span><span class="s4">) </span><span class="s3">#stream=True use generators making it more efficient. Generators - special iterators that yield items one at a time</span>
+
+    <span class="s1">detections</span><span class="s4">= </span><span class="s1">np</span><span class="s4">.</span><span class="s1">empty</span><span class="s4">((</span><span class="s6">0</span><span class="s4">,</span><span class="s6">5</span><span class="s4">))</span>
+
+    <span class="s2">for </span><span class="s1">r </span><span class="s2">in </span><span class="s1">results</span><span class="s4">:</span>
+        <span class="s1">boxes </span><span class="s4">= </span><span class="s1">r</span><span class="s4">.</span><span class="s1">boxes</span>
+        <span class="s2">for </span><span class="s1">box </span><span class="s2">in </span><span class="s1">boxes</span><span class="s4">:</span>
+
+            <span class="s3">#Bounding Box</span>
+            <span class="s1">x1</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">, </span><span class="s1">x2</span><span class="s4">, </span><span class="s1">y2 </span><span class="s4">= </span><span class="s1">box</span><span class="s4">.</span><span class="s1">xyxy</span><span class="s4">[</span><span class="s6">0</span><span class="s4">]</span>
+            <span class="s1">x1</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">, </span><span class="s1">x2</span><span class="s4">, </span><span class="s1">y2 </span><span class="s4">= </span><span class="s1">int</span><span class="s4">(</span><span class="s1">x1</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">y1</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">x2</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">y2</span><span class="s4">)</span>
+            <span class="s3">#cv2.rectangle(img, (x1, y1), (x2, y2), (255, 0, 200), 3)</span>
+            <span class="s3">#print(x1, y1, x2, y2)</span>
+            <span class="s1">w</span><span class="s4">, </span><span class="s1">h </span><span class="s4">= </span><span class="s1">x2</span><span class="s4">-</span><span class="s1">x1</span><span class="s4">,</span><span class="s1">y2</span><span class="s4">-</span><span class="s1">y1</span>
+
+            <span class="s3">#confidence</span>
+            <span class="s1">conf </span><span class="s4">= </span><span class="s1">math</span><span class="s4">.</span><span class="s1">ceil</span><span class="s4">((</span><span class="s1">box</span><span class="s4">.</span><span class="s1">conf</span><span class="s4">[</span><span class="s6">0</span><span class="s4">]*</span><span class="s6">100</span><span class="s4">))/</span><span class="s6">100</span>
+
+            <span class="s3">#Class Name</span>
+            <span class="s1">cls </span><span class="s4">= </span><span class="s1">int</span><span class="s4">(</span><span class="s1">box</span><span class="s4">.</span><span class="s1">cls</span><span class="s4">[</span><span class="s6">0</span><span class="s4">])</span>
+            <span class="s1">currentClass </span><span class="s4">= </span><span class="s1">classNames</span><span class="s4">[</span><span class="s1">cls</span><span class="s4">]</span>
+
+            <span class="s2">if </span><span class="s1">currentClass </span><span class="s4">== </span><span class="s5">"car" </span><span class="s2">or </span><span class="s1">currentClass </span><span class="s4">== </span><span class="s5">"truck" </span><span class="s2">or </span><span class="s1">currentClass </span><span class="s4">== </span><span class="s5">"bus"</span><span class="s1">\</span>
+                    <span class="s2">or </span><span class="s1">currentClass </span><span class="s4">== </span><span class="s5">"motorbike" </span><span class="s2">and </span><span class="s1">conf </span><span class="s4">&gt;</span><span class="s6">0.3</span><span class="s4">:</span>
+                <span class="s3"># cvzone.putTextRect(img, f'{currentClass} | {conf}', (max(0, x1), max(y2, 0)),</span>
+                <span class="s3">#               scale= 2, thickness = 3, offset = 10)</span>
+                <span class="s3"># cvzone.cornerRect(img, (x1, y1,w,h), l=9,rt=5)</span>
+                <span class="s1">currentArray </span><span class="s4">= </span><span class="s1">np</span><span class="s4">.</span><span class="s1">array</span><span class="s4">([</span><span class="s1">x1</span><span class="s4">,</span><span class="s1">y1</span><span class="s4">,</span><span class="s1">x2</span><span class="s4">,</span><span class="s1">y2</span><span class="s4">,</span><span class="s1">conf</span><span class="s4">])</span>
+                <span class="s1">detections </span><span class="s4">= </span><span class="s1">np</span><span class="s4">.</span><span class="s1">vstack</span><span class="s4">((</span><span class="s1">detections</span><span class="s4">, </span><span class="s1">currentArray</span><span class="s4">))</span>
+
+
+    <span class="s1">resultsTracker </span><span class="s4">= </span><span class="s1">tracker</span><span class="s4">.</span><span class="s1">update</span><span class="s4">(</span><span class="s1">detections</span><span class="s4">)</span>
+
+    <span class="s1">cv2</span><span class="s4">.</span><span class="s1">line</span><span class="s4">(</span><span class="s1">img</span><span class="s4">,(</span><span class="s1">limits</span><span class="s4">[</span><span class="s6">0</span><span class="s4">], </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">1</span><span class="s4">]), (</span><span class="s1">limits</span><span class="s4">[</span><span class="s6">2</span><span class="s4">], </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">3</span><span class="s4">]),(</span><span class="s6">0</span><span class="s4">,</span><span class="s6">0</span><span class="s4">,</span><span class="s6">255</span><span class="s4">),</span><span class="s6">5</span><span class="s4">)</span>
+
+    <span class="s2">for </span><span class="s1">result </span><span class="s2">in </span><span class="s1">resultsTracker</span><span class="s4">:</span>
+        <span class="s1">x1</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">, </span><span class="s1">x2</span><span class="s4">, </span><span class="s1">y2</span><span class="s4">, </span><span class="s1">id </span><span class="s4">= </span><span class="s1">result</span>
+        <span class="s1">x1</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">, </span><span class="s1">x2</span><span class="s4">, </span><span class="s1">y2 </span><span class="s4">= </span><span class="s1">int</span><span class="s4">(</span><span class="s1">x1</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">y1</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">x2</span><span class="s4">), </span><span class="s1">int</span><span class="s4">(</span><span class="s1">y2</span><span class="s4">)</span>
+        <span class="s1">print</span><span class="s4">(</span><span class="s1">result</span><span class="s4">)</span>
+        <span class="s1">w</span><span class="s4">, </span><span class="s1">h </span><span class="s4">= </span><span class="s1">x2 </span><span class="s4">- </span><span class="s1">x1</span><span class="s4">, </span><span class="s1">y2 </span><span class="s4">- </span><span class="s1">y1</span>
+        <span class="s1">cvzone</span><span class="s4">.</span><span class="s1">cornerRect</span><span class="s4">(</span><span class="s1">img</span><span class="s4">, (</span><span class="s1">x1</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">, </span><span class="s1">w</span><span class="s4">, </span><span class="s1">h</span><span class="s4">), </span><span class="s1">l</span><span class="s4">=</span><span class="s6">9</span><span class="s4">, </span><span class="s1">rt</span><span class="s4">=</span><span class="s6">2</span><span class="s4">, </span><span class="s1">colorR</span><span class="s4">=[</span><span class="s6">255</span><span class="s4">,</span><span class="s6">0</span><span class="s4">,</span><span class="s6">255</span><span class="s4">])</span>
+        <span class="s1">cvzone</span><span class="s4">.</span><span class="s1">putTextRect</span><span class="s4">(</span><span class="s1">img</span><span class="s4">, </span><span class="s5">f'</span><span class="s2">{</span><span class="s1">int</span><span class="s4">(</span><span class="s1">id</span><span class="s4">)</span><span class="s2">}</span><span class="s5">'</span><span class="s4">, (</span><span class="s1">max</span><span class="s4">(</span><span class="s6">0</span><span class="s4">, </span><span class="s1">x1</span><span class="s4">), </span><span class="s1">max</span><span class="s4">(</span><span class="s6">35</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">)),</span>
+                        <span class="s1">scale</span><span class="s4">=</span><span class="s6">2</span><span class="s4">, </span><span class="s1">thickness</span><span class="s4">=</span><span class="s6">3</span><span class="s4">, </span><span class="s1">offset</span><span class="s4">=</span><span class="s6">10</span><span class="s4">)</span>
+
+        <span class="s1">cx</span><span class="s4">, </span><span class="s1">cy </span><span class="s4">=</span><span class="s1">x1</span><span class="s4">+</span><span class="s1">w</span><span class="s4">//</span><span class="s6">2</span><span class="s4">, </span><span class="s1">y1</span><span class="s4">+</span><span class="s1">h</span><span class="s4">//</span><span class="s6">2</span>
+        <span class="s1">cv2</span><span class="s4">.</span><span class="s1">circle</span><span class="s4">(</span><span class="s1">img</span><span class="s4">,(</span><span class="s1">cx</span><span class="s4">,</span><span class="s1">cy</span><span class="s4">),</span><span class="s6">5</span><span class="s4">,(</span><span class="s6">255</span><span class="s4">,</span><span class="s6">0</span><span class="s4">,</span><span class="s6">255</span><span class="s4">), </span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">FILLED</span><span class="s4">)</span>
+
+        <span class="s2">if </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">0</span><span class="s4">] &lt;</span><span class="s1">cx</span><span class="s4">&lt; </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">2</span><span class="s4">] </span><span class="s2">and </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">1</span><span class="s4">]-</span><span class="s6">30</span><span class="s4">&lt;</span><span class="s1">cy</span><span class="s4">&lt;</span><span class="s1">limits</span><span class="s4">[</span><span class="s6">1</span><span class="s4">]+</span><span class="s6">20</span><span class="s4">:</span>
+            <span class="s2">if </span><span class="s1">totalCount</span><span class="s4">.</span><span class="s1">count</span><span class="s4">(</span><span class="s1">id</span><span class="s4">)==</span><span class="s6">0</span><span class="s4">:</span>
+                <span class="s1">totalCount</span><span class="s4">.</span><span class="s1">append</span><span class="s4">(</span><span class="s1">id</span><span class="s4">)</span>
+                <span class="s1">cv2</span><span class="s4">.</span><span class="s1">line</span><span class="s4">(</span><span class="s1">img</span><span class="s4">, (</span><span class="s1">limits</span><span class="s4">[</span><span class="s6">0</span><span class="s4">], </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">1</span><span class="s4">]), (</span><span class="s1">limits</span><span class="s4">[</span><span class="s6">2</span><span class="s4">], </span><span class="s1">limits</span><span class="s4">[</span><span class="s6">3</span><span class="s4">]), (</span><span class="s6">0</span><span class="s4">, </span><span class="s6">255</span><span class="s4">, </span><span class="s6">0</span><span class="s4">), </span><span class="s6">5</span><span class="s4">)</span>
+
+    <span class="s3"># cvzone.putTextRect(img, f'Count: {len(totalCount)}', (50, 50))</span>
+    <span class="s1">cv2</span><span class="s4">.</span><span class="s1">putText</span><span class="s4">(</span><span class="s1">img</span><span class="s4">,</span><span class="s1">str</span><span class="s4">(</span><span class="s1">len</span><span class="s4">(</span><span class="s1">totalCount</span><span class="s4">)),(</span><span class="s6">177</span><span class="s4">,</span><span class="s6">100</span><span class="s4">),</span><span class="s1">cv2</span><span class="s4">.</span><span class="s1">FONT_HERSHEY_PLAIN</span><span class="s4">,</span><span class="s6">5</span><span class="s4">,(</span><span class="s6">50</span><span class="s4">,</span><span class="s6">50</span><span class="s4">,</span><span class="s6">255</span><span class="s4">),</span><span class="s6">8</span><span class="s4">)</span>
+    <span class="s1">cv2</span><span class="s4">.</span><span class="s1">imshow</span><span class="s4">(</span><span class="s5">"Image"</span><span class="s4">, </span><span class="s1">img</span><span class="s4">) </span><span class="s3"># Show the frame in a window</span>
+    <span class="s3"># cv2.imshow("ImageRegion", imgRegion)</span>
+    <span class="s1">cv2</span><span class="s4">.</span><span class="s1">waitKey</span><span class="s4">(</span><span class="s6">1</span><span class="s4">)</span>
+
+</pre>
+
+</body></html>
