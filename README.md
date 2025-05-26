@@ -46,16 +46,13 @@ networkx – Complex networks and graph analysis
 contourpy, cycler, fonttools, kiwisolver, lazy-loader – Backend and helper libraries for plotting and rendering
 
 **Features**
-🎯 Real-Time Object Detection using YOLOv8 (Ultralytics)
-📷 Image & Video Processing with OpenCV, Scikit-Image, and Pillow
-📊 Data Analysis & Visualization using Pandas, Seaborn, and Matplotlib
-🧠 Deep Learning Framework powered by PyTorch with TorchVision and TorchAudio support
-⚙️ Lightweight & Modular design with Hydra & OmegaConf configuration
-🛠️ Built-in Tracking & Filtering via FilterPy and LAP
-📈 Performance Monitoring using TQDM and Psutil
-📦 Flexible Config & Dependency Management with YAML, Filelock, and FSSpec
-🔬 Scientific Computing Ready with SciPy, SymPy, and NumPy
-💡 Easily Extendable with support for plugins and advanced parsing
+1. Real-Time Object Detection using YOLOv8 (Ultralytics)
+
+2. Image & Video Processing with OpenCV, Scikit-Image, and Pillow
+
+3. Data Analysis & Visualization using Pandas, Seaborn, and Matplotlib
+
+4. Deep Learning Framework powered by PyTorch with TorchVision and TorchAudio support
 
 **Result Snippet**
 ![image](https://github.com/user-attachments/assets/6a4040a4-4a24-488c-ab18-5806e675c65f)
