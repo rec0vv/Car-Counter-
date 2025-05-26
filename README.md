@@ -3,6 +3,7 @@ The Car Counter Project is a computer vision-based application that automaticall
 This project is ideal for traffic monitoring systems, smart city analytics, and transportation research. It combines the power of OpenCV, Ultralytics YOLO, and custom tracking logic to deliver efficient and accurate vehicle counting.
 
 **🛠️ Tools & Libraries**
+
 📊 Data Handling & Analysis
 pandas – Powerful data structures for data analysis
 numpy – Numerical operations on large arrays and matrices
